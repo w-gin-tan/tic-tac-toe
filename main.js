@@ -27,10 +27,10 @@ const Cell = (obj, val = "") => {
 };
 
 const Player = (turn) => {
-    const player = turn;
+    const _player = turn;
 
     const getIcon = () => {
-        return player;
+        return _player;
     };
     // setScore, getScore?
 
@@ -44,7 +44,7 @@ const gameBoard = (() => {
 
     const init = () => {
         const cells = document.getElementsByClassName('cell');
-        // loop through cells 
+         
         for (let cell = 0; cell < cells.length; cell++) {
             const curCell = cells[cell];
             _board[cell] = Cell(curCell);
@@ -56,9 +56,8 @@ const gameBoard = (() => {
     };
 
     const setBoardCell = (idx, player) => {
-        const actualIdx = idx-1;
-        const arrCell = _board[actualIdx];
-        const domCell = document.querySelector(`[data-cell="${idx}"]`);
+        const arrCell = _board[idx];
+        const domCell = document.querySelector(`[data-cell="${idx+1}"]`);
         
         const playerIcon = player.getIcon();
         arrCell.setValue(playerIcon);
@@ -72,24 +71,50 @@ const gameBoard = (() => {
     };
 })();
 
-const gameController = (() => {
-
-    // all this stuff in displaycontroller
-    gameBoard.init();
-
-    let playerX = Player('X');
-    let playerO = Player('O');
-
-    gameBoard.setBoardCell(3, playerX);
-    gameBoard.setBoardCell(5, playerO);
-
-    // setup game board
-    // DOM display board and click functions
-
-    showBoardState = gameBoard.getBoard();
-    console.log(showBoardState);
+const displayController = (() => {
+    const setupClickHandler = () => {
+        const cells = document.getElementsByClassName('cell'); 
+        
+        for (let cell = 0; cell < cells.length; cell++) {
+            cells[cell].addEventListener('click', function cellClicked() {
+                const turn = gameController.getTurn();
+                gameBoard.setBoardCell(cell, turn);
+                this.removeEventListener('click', cellClicked);
+            });
+        }
+    };
 
     return {
-        showBoardState
+        setupClickHandler
+    };
+})();
+
+const gameController = (() => {
+    let _turn = '';
+
+    const _init = () => {
+        // Board
+        gameBoard.init();
+
+        // Display
+        displayController.setupClickHandler();
+    };
+
+    const _setTurn = (value) => {
+        _turn = value;
+    }
+
+    const getTurn = () => {
+        return _turn;
+    }
+
+    _init();
+
+    let playerX = Player('X');
+
+    _setTurn(playerX);
+
+    return {
+        getTurn
     };
 })();

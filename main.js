@@ -79,6 +79,8 @@ const displayController = (() => {
             cells[cell].addEventListener('click', function cellClicked() {
                 const turn = gameController.getTurn();
                 gameBoard.setBoardCell(cell, turn);
+
+                // Line 84 prevents players from taking over spots already taken
                 this.removeEventListener('click', cellClicked);
             });
         }

@@ -88,6 +88,7 @@ const displayController = (() => {
                 const turn = gameController.getTurn();
                 gameBoard.setBoardState(cells[cell], turn);
                 gameBoard.getBoardState();
+                gameController.toggleTurn();
 
                 // Line 84 prevents players from taking over spots already taken
                 this.removeEventListener('click', cellClicked);
@@ -101,7 +102,11 @@ const displayController = (() => {
 })();
 
 const gameController = (() => {
-    let _turn = '';
+    let _players = [
+        Player('X'),
+        Player('O')
+    ];
+    let _turn = _players[0];
 
     const _init = () => {
         // Board
@@ -111,8 +116,9 @@ const gameController = (() => {
         displayController.setupClickHandler();
     };
 
-    const _setTurn = (value) => {
-        _turn = value;
+    const toggleTurn = () => {
+        if (_turn === _players[0]) _turn = _players[1]; 
+        else _turn = _players[0];
     }
 
     const getTurn = () => {
@@ -121,11 +127,8 @@ const gameController = (() => {
 
     _init();
 
-    let playerX = Player('X');
-
-    _setTurn(playerX);
-
     return {
-        getTurn
+        getTurn,
+        toggleTurn
     };
 })();

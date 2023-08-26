@@ -57,19 +57,18 @@ const gameBoard = (() => {
     };
 
     const getBoardState = () => {
-        // Should return board outcomes 
-        let row = col = diag = rdiag = 0;
+        return _board;
     };
 
     const setBoardState = (cell, turn) => {
         const row = parseInt(cell.getAttribute("data-row"));
         const col = parseInt(cell.getAttribute("data-col"));
         const arrCell = _board[row][col];
-        const domCell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
         
         const turnIcon = turn.getIcon();
         arrCell.setValue(turnIcon);
-        domCell.textContent = turnIcon;
+
+        gameController.toggleTurn();
     };
 
     return {
@@ -87,12 +86,23 @@ const displayController = (() => {
             cells[cell].addEventListener('click', function cellClicked() {
                 const turn = gameController.getTurn();
                 gameBoard.setBoardState(cells[cell], turn);
-                gameBoard.getBoardState();
-                gameController.toggleTurn();
+                _updateScreen();
 
                 // Line 84 prevents players from taking over spots already taken
                 this.removeEventListener('click', cellClicked);
             });
+        }
+    };
+
+    const _updateScreen = () => {
+        const cells = document.getElementsByClassName('cell'); 
+
+        for (let cell = 0; cell < cells.length; cell++) {
+            const row = parseInt(cells[cell].getAttribute("data-row"));
+            const col = parseInt(cells[cell].getAttribute("data-col"));
+            const board = gameBoard.getBoardState();
+
+            cells[cell].textContent = board[row][col].getValue();
         }
     };
 

@@ -40,45 +40,54 @@ const Player = (turn) => {
 };
 
 const gameBoard = (() => {
-    const _board = new Array(9);
+    const _board = new Array(3);
 
-    const init = () => {
+    const init = () => {    // Board will be a 2D array
         const cells = document.getElementsByClassName('cell');
          
-        for (let cell = 0; cell < cells.length; cell++) {
-            const curCell = cells[cell];
-            _board[cell] = Cell(curCell);
+        for (let row = 0; row < _board.length; row++) {
+            _board[row] = new Array(3);
+
+            for (let col = 0; col < _board[row].length; col++) {
+                const curCell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+                // error handling
+                _board[row][col] = Cell(curCell);
+            }
         }
     };
 
-    const getBoard = () => {
-        return _board;
+    const getBoardState = () => {
+        // Should return board outcomes 
+        let row = col = diag = rdiag = 0;
     };
 
-    const setBoardCell = (idx, player) => {
-        const arrCell = _board[idx];
-        const domCell = document.querySelector(`[data-cell="${idx+1}"]`);
+    const setBoardState = (cell, turn) => {
+        const row = parseInt(cell.getAttribute("data-row"));
+        const col = parseInt(cell.getAttribute("data-col"));
+        const arrCell = _board[row][col];
+        const domCell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
         
-        const playerIcon = player.getIcon();
-        arrCell.setValue(playerIcon);
-        domCell.textContent = playerIcon;
+        const turnIcon = turn.getIcon();
+        arrCell.setValue(turnIcon);
+        domCell.textContent = turnIcon;
     };
 
     return {
         init,
-        getBoard,
-        setBoardCell
+        getBoardState,
+        setBoardState
     };
 })();
 
 const displayController = (() => {
     const setupClickHandler = () => {
         const cells = document.getElementsByClassName('cell'); 
-        
+
         for (let cell = 0; cell < cells.length; cell++) {
             cells[cell].addEventListener('click', function cellClicked() {
                 const turn = gameController.getTurn();
-                gameBoard.setBoardCell(cell, turn);
+                gameBoard.setBoardState(cells[cell], turn);
+                gameBoard.getBoardState();
 
                 // Line 84 prevents players from taking over spots already taken
                 this.removeEventListener('click', cellClicked);
